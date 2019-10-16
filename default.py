@@ -12,7 +12,7 @@ from libPrimaPlay import PrimaPlay
 import urllib
 from urlparse import parse_qs
 
-_addon_ = xbmcaddon.Addon('plugin.video.primaplay')
+_addon_ = xbmcaddon.Addon('plugin.video.iprima.cz')
 _scriptname_ = _addon_.getAddonInfo('name')
 _version_ = _addon_.getAddonInfo('version')
 
@@ -141,6 +141,7 @@ try:
 
     def add_show(video_list):
         url = '#'
+        thumbnail=''
         if video_list.link:
             url = get_menu_link( action = 'SHOW-NAV', linkurl = video_list.link )
         if video_list.thumbnail:
@@ -177,7 +178,7 @@ try:
         product_id = _play_parser.get_productID(link)
         
         video = _play_parser.get_video(product_id)
-        if video.link is None:
+        if video is None:
             raise Exception('Video není dostupné')
             return
 

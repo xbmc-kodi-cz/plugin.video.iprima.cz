@@ -18,7 +18,7 @@ __license__ = "GPL 2"
 __version__ = "1.0.0"
 __email__ = "alladdin@zemres.cz"
 
-_addon_ = xbmcaddon.Addon('plugin.video.primaplay')
+_addon_ = xbmcaddon.Addon('plugin.video.iprima.cz')
 _scriptname_ = _addon_.getAddonInfo('name')
 _version_ = _addon_.getAddonInfo('version')
 
