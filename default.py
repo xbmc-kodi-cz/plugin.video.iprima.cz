@@ -181,13 +181,13 @@ try:
         if video is None:
             raise Exception('Video není dostupné')
             return
-
-        video_item = xbmcgui.ListItem(video.title)
-        video_item.setInfo('video', {'Title': video.title})
+            
+        video_item = xbmcgui.ListItem(path=video.link)
+        video_item.setProperty("IsPlayable", "true")
+        video_item.setInfo(type='video', infoLabels={'Title': video.title})
         video_item.setThumbnailImage(video.image_url)
-
-        player = xbmc.Player()
-        player.play(video.link, video_item)
+        xbmcplugin.setResolvedUrl(handle=_handle_, succeeded=True, listitem=video_item)
+        xbmc.Player().play(video.link, video_item)
     
     def list_item(label, thumbnail = None, description = None, broadcast_date = None, year = None):
         li = xbmcgui.ListItem(label)
@@ -236,31 +236,35 @@ try:
     try:
         if action == "FILTER-REMOVE":
             remove_filter(linkurl)
-            xbmcplugin.endOfDirectory(_handle_, updateListing=True)
+            #xbmcplugin.endOfDirectory(_handle_, updateListing=True)
         if action == "FILTER-MANAGE":
             manage_filter(linkurl, int(filterid))
-            xbmcplugin.endOfDirectory(_handle_, updateListing=True)
+            #xbmcplugin.endOfDirectory(_handle_, updateListing=True)
         elif action == "PAGE-NEXT":
+            xbmcplugin.setContent(_handle_, 'episodes')
             next_menu(linkurl)
-            xbmcplugin.endOfDirectory(_handle_, updateListing=True)
+            #xbmcplugin.endOfDirectory(_handle_, updateListing=True)
         elif action == "SEARCH":
             search()
-            xbmcplugin.endOfDirectory(_handle_)
+            #xbmcplugin.endOfDirectory(_handle_)
         elif action == "ACCOUNT":
             account()
-            xbmcplugin.endOfDirectory(_handle_)
+            #xbmcplugin.endOfDirectory(_handle_)
         elif action == "SHOW-NAV":
+            xbmcplugin.setContent(_handle_, 'episodes')
             show_navigation(linkurl)
-            xbmcplugin.endOfDirectory(_handle_)
+            #xbmcplugin.endOfDirectory(_handle_)
         elif action == "PAGE":
+            xbmcplugin.setContent(_handle_, 'episodes')
             main_menu(linkurl, list_only=True)
-            xbmcplugin.endOfDirectory(_handle_)
+            #xbmcplugin.endOfDirectory(_handle_)
         elif action == "PLAY":
             play_video(linkurl)
         else:
             ts = int(time.time())
             shows_menu("https://prima.iprima.cz/iprima-api/ListWithFilter/Series/Content?ts="+ str(ts) +"&filter=all&featured_queue_name=iprima:hp-featured-series")
-            xbmcplugin.endOfDirectory(_handle_)
+            #xbmcplugin.endOfDirectory(_handle_)
+        xbmcplugin.endOfDirectory(_handle_)
     except Exception as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         _exception_log(exc_type, exc_value, exc_traceback)

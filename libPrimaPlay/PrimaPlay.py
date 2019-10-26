@@ -82,8 +82,8 @@ class UserAgent(object):
 class Parser:
     def __init__(self, ua = UserAgent(), time_obj = time, hd_enabled = True):
         self.ua = ua
-        self.player_init_url = 'http://api.play-backend.iprima.cz/prehravac/init?'
-        self.search_url = 'http://play.iprima.cz/vysledky-hledani-vse?'
+        self.player_init_url = 'https://api.play-backend.iprima.cz/prehravac/init?'
+        self.search_url = 'https://play.iprima.cz/vysledky-hledani-vse?'
         self.time = time_obj
         self.hd_enabled = hd_enabled
 
@@ -120,7 +120,7 @@ class Parser:
 
     def get_video(self, productID):
         if 'yt_' in productID:
-            yt_url = 'http://www.youtube.com/watch?v=' + productID.split('yt_',1)[1] 
+            yt_url = 'https://www.youtube.com/watch?v=' + productID.split('yt_',1)[1] 
             yt_video = YDStreamExtractor.getVideoInfo(yt_url, quality = 3)
             return Item(yt_video.title, yt_video.streamURL(), yt_video.thumbnail)
         else:
@@ -205,7 +205,9 @@ class Parser:
 
             thumb_result = thumb_re.search(wrapper_item)
             thumb = None
-            if thumb_result: thumb = thumb_result.group(1)
+            if thumb_result: thumb = re.sub('landscape_small_\d{1}', 'landscape_large', thumb_result.group(1))
+
+            
             
             items = self.get_items_from_wrapper(wrapper_item, src_link)
             list.append(PageVideoList(title, link, None, items, thumb))
@@ -299,7 +301,7 @@ class Parser:
             list.append(Item('[B]'+title+'[/B]' , link, None, description, isFolder = True))
 
         return list
-
+                
     def get_items_from_wrapper(self, content, src_link):
         list = []
 
@@ -318,7 +320,12 @@ class Parser:
             description_result = item_description_re.search(item_content)
 
             if title_result is None: continue
+            #soup = BeautifulSoup(title_result.group(1))
             title = self.strip_tags(title_result.group(1))
+            
+            #title_result.group(1),convertEntities=BeautifulSoup.HTML_ENTITIES)
+            #title = lambda string: soup(title_result.group(1), convertEntities=BeautifulSoup.BeautifulSoup.HTML_ENTITIES).contents[0]
+            #title = self.strip_tags(html.unescape(title_result.group(1)))
 
             if link_result is None: continue
             link = link_result.group(1)
@@ -327,11 +334,12 @@ class Parser:
             image_url = None
             description = ''
 
-            if img_result: image_url = img_result.group(1)
+            if img_result: image_url = re.sub('landscape_small_\d{1}', 'landscape_large', img_result.group(1))
 
             if description_result: 
                 description = description_result.group(1).strip()
-                title = title+ ' | ' +description
+                title = title
+                if description: title= title+ ' | ' +description
 
             list.append(Item(title , link, image_url, description))
 
@@ -423,16 +431,18 @@ class Parser:
         return link + target_link
 
     def strip_tags(self, string):
+
         result = re.sub('<[^>]+>', '', string)
         result = result.replace("\n",' ')
         result = result.replace("\t",' ')
         result = result.replace("\r",' ')
         result = re.sub('\s+', ' ', result)
+        
         return result.strip()
 
 class Account:
     def __init__(self, email, password, parser):
-        self.page_for_login = 'http://play.iprima.cz/'
+        self.page_for_login = 'https://play.iprima.cz/'
         self.auth_params = {
             'nav_remember': 'true',
             'nav_email': email,
@@ -441,7 +451,7 @@ class Account:
         }
         self.parser = parser
         self.login_url_re = re.compile('action="(https://[^/]+(?:/tdi)?/login/(?:nav/)?form(?:ular)?[^"]+)"', re.S)
-        self.video_list_url = 'http://play.iprima.cz/moje-play'
+        self.video_list_url = 'https://play.iprima.cz/moje-play'
 
     def login(self):
         login_url = self.get_login_url()

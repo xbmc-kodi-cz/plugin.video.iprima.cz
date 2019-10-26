@@ -1,3 +1,10 @@
+v0.4.5 (26.10.2019)
+- Lepší rozlišení náhledů
+- Nová ikona s lepším rozlíšením
+- Položky pořadů zobrazeny v režimu "epizod"
+- Úprava zobrazení titulku
+- Úprava způsobu přehrávání
+
 v0.4.3 (2019-09-17)
  * Fixed episode loading
  
