@@ -1,6 +1,9 @@
+v0.4.6 (27.10.2019)
+- Oprava zobrazení titulku
+
 v0.4.5 (26.10.2019)
 - Lepší rozlišení náhledů
-- Nová ikona s lepším rozlíšením
+- Nová ikona s lepším rozlišením
 - Položky pořadů zobrazeny v režimu "epizod"
 - Úprava zobrazení titulku
 - Úprava způsobu přehrávání

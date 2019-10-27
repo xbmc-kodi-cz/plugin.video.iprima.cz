@@ -206,8 +206,6 @@ class Parser:
             thumb_result = thumb_re.search(wrapper_item)
             thumb = None
             if thumb_result: thumb = re.sub('landscape_small_\d{1}', 'landscape_large', thumb_result.group(1))
-
-            
             
             items = self.get_items_from_wrapper(wrapper_item, src_link)
             list.append(PageVideoList(title, link, None, items, thumb))
@@ -320,12 +318,7 @@ class Parser:
             description_result = item_description_re.search(item_content)
 
             if title_result is None: continue
-            #soup = BeautifulSoup(title_result.group(1))
             title = self.strip_tags(title_result.group(1))
-            
-            #title_result.group(1),convertEntities=BeautifulSoup.HTML_ENTITIES)
-            #title = lambda string: soup(title_result.group(1), convertEntities=BeautifulSoup.BeautifulSoup.HTML_ENTITIES).contents[0]
-            #title = self.strip_tags(html.unescape(title_result.group(1)))
 
             if link_result is None: continue
             link = link_result.group(1)
@@ -337,7 +330,7 @@ class Parser:
             if img_result: image_url = re.sub('landscape_small_\d{1}', 'landscape_large', img_result.group(1))
 
             if description_result: 
-                description = description_result.group(1).strip()
+                description = self.strip_tags(description_result.group(1).strip())
                 title = title
                 if description: title= title+ ' | ' +description
 
@@ -431,11 +424,11 @@ class Parser:
         return link + target_link
 
     def strip_tags(self, string):
-
         result = re.sub('<[^>]+>', '', string)
         result = result.replace("\n",' ')
         result = result.replace("\t",' ')
         result = result.replace("\r",' ')
+        result = re.sub("&#(\d+);", lambda m: chr(int(m.group(1))), result)
         result = re.sub('\s+', ' ', result)
         
         return result.strip()
