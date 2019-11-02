@@ -141,7 +141,7 @@ try:
 
     def add_show(video_list):
         url = '#'
-        thumbnail=''
+        thumbnail = None
         if video_list.link:
             url = get_menu_link( action = 'SHOW-NAV', linkurl = video_list.link )
         if video_list.thumbnail:
