@@ -11,7 +11,6 @@ import ssl
 import xbmc
 import xbmcaddon
 import json
-#import YDStreamExtractor
 
 __author__ = "Ladislav Dokulil"
 __license__ = "GPL 2"
@@ -31,7 +30,7 @@ def logDbg(msg):
     log(msg, level=xbmc.LOGDEBUG)
 
 class UserAgent(object):
-    def __init__(self, session_id = None, agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:43.0) Gecko/20100101 Firefox/43.0'):
+    def __init__(self, session_id = None, agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'):
         self.agent = agent
         self.play_url = 'https://prima.iprima.cz'
         self.cookie_domain = 'prima.iprima.cz'
@@ -104,25 +103,11 @@ class Parser:
         content = self.ua.get(episode_link)
 
         product_id_re = re.compile('src="https://api.play-backend.iprima.cz/prehravac/embedded\?id=(.*?)"', re.S)
-        #youtube_re = re.compile('src="https://www.youtube.com/embed/([^"\?]*)', re.S)
-
         product_id_result = product_id_re.search(content)
-        #youtube_result = None
-
-        '''if product_id_result is None:
-            youtube_result = youtube_re.search(content)
-            if youtube_result is None: return None
-            product_id = 'yt_'+youtube_result.group(1)
-        else:'''
         product_id = product_id_result.group(1)
         return product_id
 
     def get_video(self, productID):
-        #if 'yt_' in productID:
-            #yt_url = 'https://www.youtube.com/watch?v=' + productID.split('yt_',1)[1]
-            #yt_video = YDStreamExtractor.getVideoInfo(yt_url, quality = 3)
-            #return Item(yt_video.title, yt_video.streamURL(), yt_video.thumbnail)
-        #else:
         content = self.ua.get(self.get_player_init_url(productID))
 
         link_re = re.compile("'?src'?\s*:\s+'(https?://[^']+\\.m3u8.*)'")
@@ -153,7 +138,6 @@ class Parser:
                 return None
             else:
                 raise
-
         return hd_link'''
 
     def get_next_list(self, link):
@@ -233,34 +217,7 @@ class Parser:
         redirect_result = redirect_re.search(content)
         if redirect_result is None: return None
         return self.make_full_link(redirect_result.group(1), link)
-    """
-    def get_page_player(self, content):
-        title_re = re.compile('<meta property="og:title" content="([^"]+)"/>', re.S)
-        description_re = re.compile('<meta property="og:description" content="([^"]+)"/>', re.S)
-        additional_info_re = re.compile('<span data-jnp="i.BroadcastDate">[^<]*</span>:([^\|]*)\|([^\|]*)\|([^<]*)</p>', re.S)
-        fake_player_re = re.compile('<div id="fake-player" class="[^"]+" data-product="([^"]+)">[^<]*(?:<img src="([^"]+)")?', re.S)
-        fake_player_result = fake_player_re.search(content)
-        if fake_player_result is None:
-            return None
-        title_result = title_re.search(content)
-        description_result = description_re.search(content)
-        additional_info_result = additional_info_re.search(content)
-        product_id = fake_player_result.group(1)
-        image_url = fake_player_result.group(2)
-        title = title_result.group(1).strip().decode('utf-8')
-        description = None
-        broadcast_date = None
-        duration = None
-        year = None
-        if description_result:
-            description = description_result.group(1)
-        if additional_info_result:
-            broadcast_date = additional_info_result.group(1).strip()
-            duration = additional_info_result.group(2).strip()
-            year = additional_info_result.group(3).strip()
-        video_link = self.get_video_link(product_id)
-        return Player(title, video_link, image_url, description, broadcast_date, duration, year)
-    """
+
     def get_video_lists(self, content, src_link):
         list = []
 

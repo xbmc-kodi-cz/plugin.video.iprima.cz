@@ -43,13 +43,12 @@ try:
     _icon_ = xbmc.translatePath(os.path.join(_addon_.getAddonInfo('path'), 'icon.png'))
     _handle_ = int(sys.argv[1])
     _baseurl_ = sys.argv[0]
-    _hd_enabled = False;
+    _hd_enabled = False
     if (_addon_.getSetting('hd_enabled') == 'true'): _hd_enabled = True
     _play_parser = PrimaPlay.Parser(hd_enabled=_hd_enabled)
-    _play_account = None
-    if (_addon_.getSetting('account_enabled') == 'true'):
-        _play_account = PrimaPlay.Account( _addon_.getSetting('account_email'), _addon_.getSetting('account_password'), _play_parser )
-
+    #_play_account = None
+    #if (_addon_.getSetting('account_enabled') == 'true'):
+        #_play_account = PrimaPlay.Account( _addon_.getSetting('account_email'), _addon_.getSetting('account_password'), _play_parser )
     xbmcplugin.setContent(_handle_, 'tvshows')
 
     def main_menu(pageurl, list_only = False):
@@ -147,6 +146,7 @@ try:
         if video_list.thumbnail:
             thumbnail = video_list.thumbnail
         li = list_item(video_list.title, thumbnail)
+        xbmcplugin.addSortMethod( handle = _handle_, sortMethod=xbmcplugin.SORT_METHOD_LABEL )
         xbmcplugin.addDirectoryItem(handle=_handle_, url=url, listitem=li, isFolder=True)
 
     def add_title(video_list):
@@ -162,7 +162,6 @@ try:
             li = list_item(item.title, item.image_url, item.description, item.broadcast_date, item.year)
             url = item.link
             if item.isFolder: url = get_menu_link( action = 'PAGE', linkurl = item.link )
-
             xbmcplugin.addDirectoryItem(handle=_handle_, url=url, listitem=li, isFolder=item.isFolder)
     
     def add_next_link(next_link):
@@ -183,7 +182,6 @@ try:
             return
             
         video_item = xbmcgui.ListItem(path=video.link)
-        #video_item.setProperty("IsPlayable", "true")
         video_item.setProperty('inputstreamaddon', 'inputstream.adaptive')
         video_item.setProperty('inputstream.adaptive.manifest_type', 'hls')
         video_item.setInfo(type='video', infoLabels={'Title': video.title})
@@ -238,34 +236,26 @@ try:
     try:
         if action == "FILTER-REMOVE":
             remove_filter(linkurl)
-            #xbmcplugin.endOfDirectory(_handle_, updateListing=True)
         if action == "FILTER-MANAGE":
             manage_filter(linkurl, int(filterid))
-            #xbmcplugin.endOfDirectory(_handle_, updateListing=True)
         elif action == "PAGE-NEXT":
             xbmcplugin.setContent(_handle_, 'episodes')
             next_menu(linkurl)
-            #xbmcplugin.endOfDirectory(_handle_, updateListing=True)
         elif action == "SEARCH":
             search()
-            #xbmcplugin.endOfDirectory(_handle_)
         elif action == "ACCOUNT":
             account()
-            #xbmcplugin.endOfDirectory(_handle_)
         elif action == "SHOW-NAV":
             xbmcplugin.setContent(_handle_, 'episodes')
             show_navigation(linkurl)
-            #xbmcplugin.endOfDirectory(_handle_)
         elif action == "PAGE":
             xbmcplugin.setContent(_handle_, 'episodes')
             main_menu(linkurl, list_only=True)
-            #xbmcplugin.endOfDirectory(_handle_)
         elif action == "PLAY":
             play_video(linkurl)
         else:
             ts = int(time.time())
-            shows_menu("https://prima.iprima.cz/iprima-api/ListWithFilter/Series/Content?ts="+ str(ts) +"&featured_queue_name=iprima%3Aprima-featured-series&large_size_items_cnt=3&channel_restriction=prima")
-            #xbmcplugin.endOfDirectory(_handle_)
+            shows_menu("https://prima.iprima.cz/iprima-api/ListWithFilter/Series/Content?ts="+ str(ts) +"&featured_queue_name=iprima%3Aprima-featured-series&large_size_items_cnt=3")
         xbmcplugin.endOfDirectory(_handle_)
     except Exception as ex:
         exc_type, exc_value, exc_traceback = sys.exc_info()
